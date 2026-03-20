@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Mastery Hub - 転職管理ツール</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="light-theme">
+    <div id="app">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i data-lucide="briefcase"></i>
+                <span class="logo-text">Career Mastery</span>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-item active" data-view="dashboard">
+                    <i data-lucide="layout-dashboard"></i> <span>ダッシュボード</span>
+                </button>
+                <button class="nav-item" data-view="kanban">
+                    <i data-lucide="kanban"></i> <span>選考管理</span>
+                </button>
+                <button class="nav-item" data-view="roadmap">
+                    <i data-lucide="map"></i> <span>ロードマップ</span>
+                </button>
+            </nav>
+            <div class="user-profile">
+                <div class="avatar">Y</div>
+                <div class="user-info">
+                    <div class="user-name">ゆうや</div>
+                    <div class="user-rank">転職記録</div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <!-- Simple Header -->
+            <header class="top-header">
+                <div class="status-summary">
+                    <div class="status-card">
+                        <span class="status-label">継続</span>
+                        <span class="status-value">12日</span>
+                    </div>
+                    <div class="status-card">
+                        <span class="status-label">目標まで</span>
+                        <span class="status-value">45日</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Content Area -->
+            <div id="content-area" class="view-dashboard">
+                <!-- Dashboard View -->
+                <section id="dashboard" class="content-view">
+                    <div class="hero-section">
+                        <h1>こんにちは、ゆうやさん</h1>
+                        <p>今日の活動を記録しましょう。</p>
+                    </div>
+
+                    <div class="grid-layout">
+                        <!-- Next Task Card -->
+                        <div class="card next-task-card">
+                            <div class="card-header">
+                                <h3>今日のタスク</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="task-info">
+                                    <p>職務経歴書の更新（A社向け）</p>
+                                </div>
+                                <button class="primary-button">開始する</button>
+                            </div>
+                        </div>
+
+                        <!-- Mini Timer -->
+                        <div class="card timer-card">
+                            <div class="card-header">
+                                <h3>タイマー</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="timer-display">25:00</div>
+                                <div class="timer-controls">
+                                    <button class="secondary-button" id="start-btn">スタート</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Prompts -->
+                        <div class="card full-width-card">
+                            <div class="card-header">
+                                <h3>AI活用プロンプト</h3>
+                            </div>
+                            <div class="prompt-chips">
+                                <button class="chip" onclick="copyPrompt('self-pr')">自己PR添削</button>
+                                <button class="chip" onclick="copyPrompt('interview')">模擬面接質問</button>
+                                <button class="chip" onclick="copyPrompt('company')">企業研究の要点</button>
+                                <button class="chip" onclick="copyPrompt('email')">面接後の礼状</button>
+                            </div>
+                            <div id="copy-toast" class="copy-feedback hidden">
+                                <p class="feedback-label">コピーしました：</p>
+                                <div id="copy-content" class="feedback-content"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Kanban View -->
+                <section id="kanban" class="content-view hidden">
+                    <div class="view-header">
+                        <h2>選考状況</h2>
+                        <button class="primary-button" id="add-company-btn">
+                            <i data-lucide="plus"></i> 企業を追加
+                        </button>
+                    </div>
+                    <div class="kanban-board">
+                        <div class="kanban-column" id="col-interested">
+                            <h4 class="column-title">検討中 <span class="count">0</span></h4>
+                            <div class="kanban-cards"></div>
+                        </div>
+                        <div class="kanban-column" id="col-applying">
+                            <h4 class="column-title">応募中 <span class="count">0</span></h4>
+                            <div class="kanban-cards"></div>
+                        </div>
+                        <div class="kanban-column" id="col-interview">
+                            <h4 class="column-title">面接中 <span class="count">0</span></h4>
+                            <div class="kanban-cards"></div>
+                        </div>
+                        <div class="kanban-column" id="col-offer">
+                            <h4 class="column-title">内定 <span class="count">0</span></h4>
+                            <div class="kanban-cards"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Adding Company -->
+    <div id="modal-container" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>企業を追加</h3>
+                <button id="close-modal-btn" class="icon-button"><i data-lucide="x"></i></button>
+            </div>
+            <form id="add-company-form">
+                <div class="form-group">
+                    <label for="company-name">企業名</label>
+                    <input type="text" id="company-name" required placeholder="例: 株式会社サンプル">
+                </div>
+                <div class="form-group">
+                    <label for="job-title">職種</label>
+                    <input type="text" id="job-title" placeholder="例: Webエンジニア">
+                </div>
+                <div class="form-group">
+                    <label for="initial-status">現在のステータス</label>
+                    <select id="initial-status">
+                        <option value="interested">検討中</option>
+                        <option value="applying">応募中</option>
+                        <option value="interview">面接中</option>
+                        <option value="offer">内定</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="secondary-button" id="cancel-btn">キャンセル</button>
+                    <button type="submit" class="primary-button">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+                <!-- Roadmap View -->
+                <section id="roadmap" class="content-view hidden">
+                    <div class="view-header">
+                        <h2>ロードマップ</h2>
+                        <p>転職成功までのステップを確認しましょう</p>
+                    </div>
+                    <div class="roadmap-path">
+                        <div class="step">
+                            <div class="step-marker completed">1</div>
+                            <div class="step-info">
+                                <h4>自己分析・キャリア棚卸し</h4>
+                                <p>自分の強みと価値観を言語化する</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-marker current">2</div>
+                            <div class="step-info">
+                                <h4>職務経歴書の作成</h4>
+                                <p>実績を数値化し、魅力的な書類に仕上げる</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-marker">3</div>
+                            <div class="step-info">
+                                <h4>応募・面接対策</h4>
+                                <p>企業研究と想定質問への回答準備</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-marker">4</div>
+                            <div class="step-info">
+                                <h4>内定・条件交渉</h4>
+                                <p>入社日の調整と契約内容の確認</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals, etc. -->
+    <div id="modal-container" class="hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>AIプロンプトエディタ</h3>
+                <button class="close-modal"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <textarea id="prompt-textarea" placeholder="AIへの指示内容がここに表示されます..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-button">コピー</button>
+                <button class="primary-button">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
